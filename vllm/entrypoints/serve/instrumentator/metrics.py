@@ -19,6 +19,16 @@ class PrometheusResponse(Response):
 def attach_router(app: FastAPI):
     """Mount prometheus metrics to a FastAPI app."""
 
+    # Workaround for FastAPI >= 0.137.0 where _IncludedRouter is used
+    # and lacks the 'path' attribute expected by prometheus-fastapi-instrumentator.
+    try:
+        from fastapi.routing import _IncludedRouter
+
+        if not hasattr(_IncludedRouter, "path"):
+            _IncludedRouter.path = ""
+    except ImportError:
+        pass
+
     registry = get_prometheus_registry()
 
     # `response_class=PrometheusResponse` is needed to return an HTTP response

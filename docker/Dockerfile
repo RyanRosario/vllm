@@ -178,6 +178,13 @@ RUN gcc --version
 # See: https://docs.nvidia.com/deploy/cuda-compatibility/
 ENV VLLM_ENABLE_CUDA_COMPATIBILITY=0
 
+# max jobs used by Ninja to build extensions
+ARG max_jobs=16
+ENV MAX_JOBS=${max_jobs}
+# number of threads used by nvcc
+ARG nvcc_threads=2
+ENV NVCC_THREADS=$nvcc_threads
+
 # ============================================================
 # SLOW-CHANGING DEPENDENCIES BELOW
 # These are the expensive layers that we want to cache
@@ -273,12 +280,6 @@ COPY csrc csrc/
 COPY vllm/envs.py vllm/envs.py
 COPY vllm/__init__.py vllm/__init__.py
 
-# max jobs used by Ninja to build extensions
-ARG max_jobs=2
-ENV MAX_JOBS=${max_jobs}
-# number of threads used by nvcc
-ARG nvcc_threads=8
-ENV NVCC_THREADS=$nvcc_threads
 
 ARG USE_SCCACHE
 ARG SCCACHE_DOWNLOAD_URL
